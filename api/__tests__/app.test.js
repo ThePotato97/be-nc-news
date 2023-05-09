@@ -10,8 +10,8 @@ const seed = require("../../db/seeds/seed");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("/api/topics", () => {
-  describe("get", () => {
+describe("/api", () => {
+  describe("get /api/topics", () => {
     it("should get a list of topics in the database and have a status of 200", () => {
       return request(app)
         .get("/api/topics")
@@ -25,6 +25,11 @@ describe("/api/topics", () => {
             expect(topic).toHaveProperty("description");
           });
         });
+    });
+  });
+  describe("invalid path", () => {
+    it("should return 404 if the path doesn't exist", () => {
+      return request(app).get("/api/banana").expect(404);
     });
   });
 });

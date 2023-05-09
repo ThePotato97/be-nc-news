@@ -6,12 +6,16 @@ exports.getArticleById = (req, res, next) => {
     next({ status: 404, msg: "Invalid parameter" });
     return;
   }
-  selectArticleById(article_id).then((article) => {
-    const firstArticle = article[0];
-    if (!firstArticle) {
-      next({ status: 404, msg: "Article ID does not exist" });
-      return;
-    }
-    res.status(200).send({ article: firstArticle });
-  });
+  selectArticleById(article_id)
+    .then((article) => {
+      const firstArticle = article[0];
+      if (!firstArticle) {
+        next({ status: 404, msg: "Article ID does not exist" });
+        return;
+      }
+      res.status(200).send({ article: firstArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

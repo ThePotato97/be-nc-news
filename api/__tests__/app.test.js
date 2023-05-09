@@ -71,7 +71,7 @@ describe("/api", () => {
           expect(body.msg).toBe("Invalid parameter");
         });
     });
-    it.only("should return an error when the article id doesn't exist", () => {
+    it("should return an error when the article id doesn't exist", () => {
       return request(app)
         .get("/api/articles/123994")
         .expect(404)

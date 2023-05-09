@@ -1,7 +1,7 @@
-const { selectEndpoints } = require("../models/endpoints.model");
+const { readFile } = require("fs/promises");
 
 exports.getEndpoints = (req, res, next) => {
-  selectEndpoints().then((docs) => {
-    res.status(200).send(docs);
+  return readFile(`${__dirname}/../../endpoints.json`).then((json) => {
+    return res.status(200).send(JSON.parse(json.toString()));
   });
 };

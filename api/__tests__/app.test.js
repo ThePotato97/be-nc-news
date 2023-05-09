@@ -8,7 +8,7 @@ const app = require("../app");
 const seed = require("../../db/seeds/seed");
 
 beforeEach(() => seed(testData));
-//afterAll(() => db.end());
+afterAll(() => db.end());
 
 describe("/api/topics", () => {
   describe("get", () => {

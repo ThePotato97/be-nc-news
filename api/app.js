@@ -1,15 +1,10 @@
 const express = require("express");
 const { getTopics } = require("./controllers/topics.controller");
+const { errorHandling } = require("./middlewares/errorHandling.middleware");
 
 const app = express();
 
-app.use((err, req, res, next) => {
-  if (err.status && err.msg) {
-    res.status(err.status).json({ msg: err.msg });
-  } else {
-    next(err);
-  }
-});
+app.use(errorHandling);
 
 app.get("/api/topics", getTopics);
 

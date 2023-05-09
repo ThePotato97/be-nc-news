@@ -11,7 +11,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("/api", () => {
-  describe("get /api", () => {
+  describe("GET /api", () => {
     it("should return the endpoints documentation", () => {
       return request(app)
         .get("/api")
@@ -26,7 +26,8 @@ describe("/api", () => {
         });
     });
   });
-  describe("get /api/topics", () => {
+
+  describe("GET /api/topics", () => {
     it("should get a list of topics in the database and have a status of 200", () => {
       return request(app)
         .get("/api/topics")
@@ -42,7 +43,46 @@ describe("/api", () => {
         });
     });
   });
-  describe("invalid path", () => {
+
+  describe("GET /api/articles/:article_id", () => {
+    it("should return the specified article from the id", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((res) => {
+          const { article } = res.body;
+          expect(article).toBeInstanceOf(Object);
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+        });
+    });
+    it("should return an error when the parameter is wrong", () => {
+      return request(app)
+        .get("/api/articles/fails")
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Invalid parameter");
+        });
+    });
+    it.only("should return an error when the article id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/123994")
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Article ID does not exist");
+        });
+    });
+  });
+
+  describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {
       return request(app).get("/api/banana").expect(404);
     });

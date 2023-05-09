@@ -11,6 +11,21 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("/api", () => {
+  describe("get /api", () => {
+    it("should return the endpoints documentation", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((res) => {
+          const { body } = res;
+          expect(res.headers["content-type"]).toMatch(/json/);
+          expect(body).toHaveProperty("GET /api");
+          expect(body).toHaveProperty("GET /api/topics");
+          expect(body["GET /api"]).toHaveProperty("description");
+          expect(body["GET /api/topics"]).toHaveProperty("description");
+        });
+    });
+  });
   describe("get /api/topics", () => {
     it("should get a list of topics in the database and have a status of 200", () => {
       return request(app)

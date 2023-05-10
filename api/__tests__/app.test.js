@@ -62,7 +62,7 @@ describe("/api", () => {
           expect(article).toHaveProperty("article_img_url");
         });
     });
-    it.only("should return an error when the parameter is wrong", () => {
+    it("should return an error when the parameter is wrong", () => {
       return request(app)
         .get("/api/articles/fails")
         .expect(400)

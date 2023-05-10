@@ -98,6 +98,7 @@ describe("/api", () => {
             expect(topic).toHaveProperty("created_at");
             expect(topic).toHaveProperty("votes");
             expect(topic).toHaveProperty("article_img_url");
+            expect(topic).toHaveProperty("comment_count");
           });
         });
     });

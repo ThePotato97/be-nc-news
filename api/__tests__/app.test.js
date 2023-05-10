@@ -81,7 +81,33 @@ describe("/api", () => {
         });
     });
   });
-
+  describe("GET /api/articles/:article_id/comments", () => {
+    it("should return the specified article comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((res) => {
+          const { comments } = res.body;
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("article_id");
+          });
+        });
+    });
+    it("should be able to handle an invalid article id", () => {
+      return request(app)
+        .get("/api/articles/test/comments")
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+  });
   describe("GET /api/articles", () => {
     it("should get a list of articles that are in the database and have a status of 200", () => {
       return request(app)

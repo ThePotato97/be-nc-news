@@ -19,3 +19,16 @@ exports.selectArticles = () => {
     )
     .then(({ rows }) => rows);
 };
+
+exports.selectCommentsByArticleId = (id) => {
+  return db
+    .query(
+      `
+      SELECT * FROM comments 
+      WHERE article_id = $1
+      ORDER BY comments.created_at DESC;
+  `,
+      [id]
+    )
+    .then(({ rows }) => rows);
+};

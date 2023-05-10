@@ -2,13 +2,16 @@ const express = require("express");
 const { getTopics } = require("./controllers/topics.controller");
 const { errorHandling } = require("./middlewares/errorHandling.middleware");
 const { getEndpoints } = require("./controllers/endpoints.controller");
+const { getArticleById } = require("./controllers/articles.controller");
 
 const app = express();
 
-app.use(errorHandling);
+app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/topics", getTopics);
 
 app.get("/api", getEndpoints);
+
+app.use(errorHandling);
 
 module.exports = app;

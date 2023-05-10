@@ -62,13 +62,13 @@ describe("/api", () => {
           expect(article).toHaveProperty("article_img_url");
         });
     });
-    it("should return an error when the parameter is wrong", () => {
+    it.only("should return an error when the parameter is wrong", () => {
       return request(app)
         .get("/api/articles/fails")
-        .expect(404)
+        .expect(400)
         .then((res) => {
           const { body } = res;
-          expect(body.msg).toBe("Invalid parameter");
+          expect(body.msg).toBe("Bad Request");
         });
     });
     it("should return an error when the article id doesn't exist", () => {

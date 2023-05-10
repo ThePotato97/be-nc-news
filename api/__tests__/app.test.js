@@ -82,6 +82,63 @@ describe("/api", () => {
     });
   });
 
+  describe("GET /api/articles", () => {
+    it("should get a list of articles that are in the database and have a status of 200", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          articles.forEach((topic) => {
+            expect(topic).toHaveProperty("author");
+            expect(topic).toHaveProperty("article_id");
+            expect(topic).toHaveProperty("topic");
+            expect(topic).toHaveProperty("created_at");
+            expect(topic).toHaveProperty("votes");
+            expect(topic).toHaveProperty("article_img_url");
+            expect(topic).toHaveProperty("comment_count");
+          });
+        });
+    });
+    it("should not have a body property on any articles", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          articles.forEach((topic) => {
+            expect(topic).not.toHaveProperty("body");
+          });
+        });
+    });
+    it("should have the total count of the comments", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+          articles.forEach((topic) => {
+            expect(topic).toHaveProperty("comment_count");
+          });
+        });
+    });
+
+    it("should be sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+          expect(articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+  });
   describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {
       return request(app).get("/api/banana").expect(404);

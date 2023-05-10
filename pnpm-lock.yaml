@@ -7,6 +7,9 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: 4.18.2
+  jest-sorted:
+    specifier: ^1.0.14
+    version: 1.0.14
   pg:
     specifier: ^8.7.3
     version: 8.7.3
@@ -2204,6 +2207,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /jest-sorted@1.0.14:
+    resolution: {integrity: sha512-qGMA3ybF15S+4gDtv3XaE/GtEd3YvSepVC3vL63TbxIISkeOS/0HhRZYL12VQGKn0TWyi2/62dh5OO71X9LY3A==}
+    dev: false
 
   /jest-util@27.5.1:
     resolution: {integrity: sha512-Kv2o/8jNvX1MQ0KGtw480E/w4fBCDOnH6+6DmeKi6LZUIlKA5kwY0YNdlzaWTiVgxqAqik11QyxDOKk543aKXw==}

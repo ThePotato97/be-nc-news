@@ -381,6 +381,29 @@ describe("/api", () => {
         });
     });
   });
+  describe("DELETE /api/comments/:comment_id", () => {
+    it("should return 204 with no content when successful", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    it("should return 404 if the comment id invalid", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Comment ID does not exist");
+        });
+    });
+    it("should be able to handle an invalid comment id", () => {
+      return request(app)
+        .delete("/api/comments/test")
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+  });
   describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {
       return request(app).get("/api/banana").expect(404);

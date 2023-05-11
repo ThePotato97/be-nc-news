@@ -3,7 +3,16 @@ const db = require("../../db/connection.js");
 exports.selectArticleById = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
-    .then(({ rows }) => rows);
+    .then(({ rows }) => {
+      const firstArticle = rows.pop();
+      if (!firstArticle) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article ID does not exist",
+        });
+      }
+      return firstArticle;
+    });
 };
 
 exports.selectArticles = () => {
@@ -20,16 +29,24 @@ exports.selectArticles = () => {
     .then(({ rows }) => rows);
 };
 
+exports.addComment = (id, username, body) => {
+  return this.selectArticleById(id)
+    .then(() => {
+      return db.query(
+        `
+    INSERT INTO comments(article_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+    `,
+        [id, username, body]
+      );
+    })
+    .then(({ rows }) => rows[0]);
+};
+
 exports.selectCommentsByArticleId = (id) => {
   return this.selectArticleById(id)
-    .then((article) => {
-      const firstArticle = article[0];
-      if (!firstArticle) {
-        return Promise.reject({
-          status: 404,
-          msg: "Article ID does not exist",
-        });
-      }
+    .then(() => {
       return db.query(
         `
       SELECT * FROM comments 

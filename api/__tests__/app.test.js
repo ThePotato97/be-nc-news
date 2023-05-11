@@ -130,6 +130,98 @@ describe("/api", () => {
         });
     });
   });
+  describe("POST /api/articles/:article_id/comments", () => {
+    it("should return the posted comment", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "butter_bridge",
+          body: "Hello World!",
+        })
+        .expect(201)
+        .then((res) => {
+          const { comment } = res.body;
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: "butter_bridge",
+            body: "Hello World!",
+            article_id: 1,
+          });
+        });
+    });
+    it("should ignore unnecessary body properties", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "butter_bridge",
+          body: "Hello World!",
+          test: "",
+        })
+        .expect(201)
+        .then((res) => {
+          const { comment } = res.body;
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: "butter_bridge",
+            body: "Hello World!",
+            article_id: 1,
+          });
+        });
+    });
+    it("should be able to handle an invalid article id", () => {
+      return request(app)
+        .post("/api/articles/test/comments")
+        .send({
+          username: "butter_bridge",
+          body: "Hello World!",
+        })
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    it("should be able to handle username that doesn't exist", () => {
+      return request(app)
+        .post("/api/articles/test/comments")
+        .send({
+          username: "foo",
+          body: "Hello World!",
+        })
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    it("should be able to handle an empty body", () => {
+      return request(app)
+        .post("/api/articles/test/comments")
+        .send({})
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    it("should return 404 if the article id invalid", () => {
+      return request(app)
+        .post("/api/articles/1000/comments")
+        .send({
+          username: "butter_bridge",
+          body: "Hello World!",
+        })
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Article ID does not exist");
+        });
+    });
+  });
   describe("GET /api/articles", () => {
     it("should get a list of articles that are in the database and have a status of 200", () => {
       return request(app)

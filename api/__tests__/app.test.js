@@ -222,6 +222,106 @@ describe("/api", () => {
         });
     });
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    it("should increment the specified article id's and add 1 vote and return the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(200)
+        .then((res) => {
+          const { article } = res.body;
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 101,
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    it("should increment the specified article id's and add -100 votes and return the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: -100,
+        })
+        .expect(200)
+        .then((res) => {
+          const { article } = res.body;
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    it("should ignore unnecessary body properties", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({
+          inc_votes: -100,
+          test: 1000,
+        })
+        .expect(200)
+        .then((res) => {
+          const { article } = res.body;
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    it("should be able to handle an empty body", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({})
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Invalid Body");
+        });
+    });
+    it("should be able to handle an invalid article id", () => {
+      return request(app)
+        .patch("/api/articles/test")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    it("should return an error when the article id doesn't exist", () => {
+      return request(app)
+        .patch("/api/articles/1000")
+        .send({
+          inc_votes: 1,
+        })
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Article ID does not exist");
+        });
+    });
+  });
   describe("GET /api/articles", () => {
     it("should get a list of articles that are in the database and have a status of 200", () => {
       return request(app)

@@ -59,3 +59,19 @@ exports.selectCommentsByArticleId = (id) => {
 
     .then(({ rows }) => rows);
 };
+
+exports.updateArticleVotes = (id, votes) => {
+  return this.selectArticleById(id).then(() => {
+    return db
+      .query(
+        `
+        UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        returning *;
+      `,
+        [votes, id]
+      )
+      .then(({ rows }) => rows[0]);
+  });
+};

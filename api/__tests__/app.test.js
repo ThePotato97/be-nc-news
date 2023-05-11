@@ -381,7 +381,30 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("GET /api/users", () => {
+  describe("DELETE /api/comments/:comment_id", () => {
+    it("should return 204 with no content when successful", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    it("should return 404 if the comment id invalid", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Comment ID does not exist");
+        });
+    });
+    it("should be able to handle an invalid comment id", () => {
+      return request(app)
+        .delete("/api/comments/test")
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+  });
+  describe("GET /api/users", () => {
     it("should return an array of objects of users", () => {
       return request(app)
         .get("/api/users")

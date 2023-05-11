@@ -82,7 +82,7 @@ describe("/api", () => {
     });
   });
   describe("GET /api/articles/:article_id/comments", () => {
-    it.only("should return the specified article comments", () => {
+    it("should return the specified article comments", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)

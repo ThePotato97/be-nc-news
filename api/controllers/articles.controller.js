@@ -22,15 +22,7 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleById(article_id)
-    .then((article) => {
-      const firstArticle = article[0];
-      if (!firstArticle) {
-        next({ status: 404, msg: "Article ID does not exist" });
-        return;
-      }
-      return selectCommentsByArticleId(article_id);
-    })
+  selectCommentsByArticleId(article_id)
     .then((comments) => {
       res.status(200).send({ comments });
     })

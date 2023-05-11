@@ -21,14 +21,24 @@ exports.selectArticles = () => {
 };
 
 exports.selectCommentsByArticleId = (id) => {
-  return db
-    .query(
-      `
+  return this.selectArticleById(id)
+    .then((article) => {
+      const firstArticle = article[0];
+      if (!firstArticle) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article ID does not exist",
+        });
+      }
+      return db.query(
+        `
       SELECT * FROM comments 
       WHERE article_id = $1
       ORDER BY comments.created_at DESC;
   `,
-      [id]
-    )
+        [id]
+      );
+    })
+
     .then(({ rows }) => rows);
 };

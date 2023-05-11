@@ -81,7 +81,55 @@ describe("/api", () => {
         });
     });
   });
-
+  describe("GET /api/articles/:article_id/comments", () => {
+    it.only("should return the specified article comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((res) => {
+          const { comments } = res.body;
+          expect(comments).toBeInstanceOf(Array);
+          expect(comments).toHaveLength(11);
+          comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: 1,
+            });
+          });
+        });
+    });
+    it("should be able to handle an invalid article id", () => {
+      return request(app)
+        .get("/api/articles/test/comments")
+        .expect(400)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    it("should return an error when the article id doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/1000/comments")
+        .expect(404)
+        .then((res) => {
+          const { body } = res;
+          expect(body.msg).toBe("Article ID does not exist");
+        });
+    });
+    it("should return an empty array for an article with no comments", () => {
+      return request(app)
+        .get("/api/articles/7/comments")
+        .expect(200)
+        .then((res) => {
+          const { comments } = res.body;
+          expect(comments).toHaveLength(0);
+        });
+    });
+  });
   describe("GET /api/articles", () => {
     it("should get a list of articles that are in the database and have a status of 200", () => {
       return request(app)
@@ -89,8 +137,10 @@ describe("/api", () => {
         .expect(200)
         .then((res) => {
           const { articles } = res.body;
+
           expect(articles).toBeInstanceOf(Array);
           expect(articles).toHaveLength(12);
+
           articles.forEach((topic) => {
             expect(topic).toHaveProperty("author");
             expect(topic).toHaveProperty("article_id");

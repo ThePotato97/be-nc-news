@@ -5,9 +5,12 @@ const { getEndpoints } = require("./controllers/endpoints.controller");
 const {
   getArticleById,
   getArticles,
+  getCommentsByArticleId,
 } = require("./controllers/articles.controller");
 
 const app = express();
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.get("/api/articles/:article_id", getArticleById);
 

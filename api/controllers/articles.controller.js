@@ -31,7 +31,7 @@ exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
   addComment(article_id, username, body)
     .then((comment) => {
-      res.status(200).send({ comment });
+      res.status(201).send({ comment });
     })
     .catch((err) => next(err));
 };

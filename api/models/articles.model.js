@@ -41,7 +41,7 @@ exports.addComment = (id, username, body) => {
         [id, username, body]
       );
     })
-    .then(({ rows }) => rows.pop());
+    .then(({ rows }) => rows[0]);
 };
 
 exports.selectCommentsByArticleId = (id) => {

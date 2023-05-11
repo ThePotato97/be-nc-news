@@ -381,6 +381,24 @@ describe("/api", () => {
         });
     });
   });
+  describe.only("GET /api/users", () => {
+    it("should return an array of objects of users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((res) => {
+          const { users } = res.body;
+          expect(users).toHaveLength(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+  });
   describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {
       return request(app).get("/api/banana").expect(404);

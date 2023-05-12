@@ -16,11 +16,22 @@ exports.selectArticleById = (id) => {
 };
 
 exports.selectArticles = (topic, sortBy = "created_at", order = "desc") => {
+  const validOrder = ["DESC", "ASC"]
   const validColumns = ["created_at", "author", "title", "article_id", "topic", "created_at", "votes", "article_img_url"]
   const topicQuery = topic !== undefined ? `WHERE articles.topic = $1` : ``
   const queryParams = topic !== undefined ? [topic] : []
-
-  const sort = validColumns.includes(sortBy) ? sortBy : "created_at"
+  if (!validOrder.includes(order.toUpperCase())) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Invalid order field'
+    })
+  }
+  if (!validColumns.includes(sortBy)) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Invalid sort_by field'
+    })
+  }
   return db
     .query(
       `
@@ -29,7 +40,7 @@ exports.selectArticles = (topic, sortBy = "created_at", order = "desc") => {
       LEFT JOIN comments ON articles.article_id = comments.article_id
       ${topicQuery}
       GROUP BY articles.article_id 
-      ORDER BY articles.${sort} ${order.toUpperCase() === "ASC" ? "ASC" : "DESC"};
+      ORDER BY articles.${sortBy} ${order.toUpperCase() === "ASC" ? "ASC" : "DESC"};
   `,
       queryParams
     )

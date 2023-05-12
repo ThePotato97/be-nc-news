@@ -15,26 +15,39 @@ exports.selectArticleById = (id) => {
     });
 };
 
+exports.selectTopicNames = () => {
+  return db.query(`SELECT DISTINCT topic FROM articles;`).then(({ rows }) => rows)
+}
+
 exports.selectArticles = (topic, sortBy = "created_at", order = "desc") => {
   const validOrder = ["DESC", "ASC"]
   const validColumns = ["created_at", "author", "title", "article_id", "topic", "created_at", "votes", "article_img_url"]
   const topicQuery = topic !== undefined ? `WHERE articles.topic = $1` : ``
   const queryParams = topic !== undefined ? [topic] : []
-  if (!validOrder.includes(order.toUpperCase())) {
-    return Promise.reject({
-      status: 400,
-      msg: 'Invalid order field'
-    })
-  }
-  if (!validColumns.includes(sortBy)) {
-    return Promise.reject({
-      status: 400,
-      msg: 'Invalid sort_by field'
-    })
-  }
-  return db
-    .query(
-      `
+  return this.selectTopicNames().then((validTopics) => {
+
+    if (topic !== undefined && !validTopics.some(({ topic: validTopic }) => validTopic === topic)) {
+      return Promise.reject({
+        status: 404,
+        msg: `Invalid topic field`
+      });
+    }
+
+    if (!validOrder.includes(order.toUpperCase())) {
+      return Promise.reject({
+        status: 400,
+        msg: 'Invalid order field'
+      })
+    }
+    if (!validColumns.includes(sortBy)) {
+      return Promise.reject({
+        status: 400,
+        msg: 'Invalid sort_by field'
+      })
+    }
+    return db
+      .query(
+        `
       SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
       FROM articles 
       LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -42,9 +55,9 @@ exports.selectArticles = (topic, sortBy = "created_at", order = "desc") => {
       GROUP BY articles.article_id 
       ORDER BY articles.${sortBy} ${order.toUpperCase() === "ASC" ? "ASC" : "DESC"};
   `,
-      queryParams
-    )
-    .then(({ rows }) => rows);
+        queryParams
+      )
+  }).then(({ rows }) => rows);
 };
 
 exports.addComment = (id, username, body) => {

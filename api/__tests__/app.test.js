@@ -572,10 +572,9 @@ describe("/api", () => {
     it('should return an empty array if theres no matching topics', () => {
       return request(app)
         .get("/api/articles?topic=invalid")
-        .expect(200)
+        .expect(404)
         .then((res) => {
-          const { articles } = res.body
-          expect(articles).toHaveLength(0)
+          expect(res.body.msg).toBe('Invalid topic field');
         });
     });
     it('should return articles sorted by votes in ascending order', () => {

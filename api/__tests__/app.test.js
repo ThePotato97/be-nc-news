@@ -553,6 +553,44 @@ describe("/api", () => {
           });
         });
     });
+    it('should return 400 for invalid sort_by field', () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Invalid sort_by field');
+        });
+    });
+    it('should return 400 for invalid order field', () => {
+      return request(app)
+        .get("/api/articles?order=invalid")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Invalid order field');
+        });
+    });
+    it('should return an empty array if theres no matching topics', () => {
+      return request(app)
+        .get("/api/articles?topic=invalid")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body
+          expect(articles).toHaveLength(0)
+        });
+    });
+    it('should return articles sorted by votes in ascending order', () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("votes", {
+            descending: false,
+          });
+        });
+    });
   });
   describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {

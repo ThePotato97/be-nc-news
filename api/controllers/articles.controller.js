@@ -38,11 +38,14 @@ exports.postComment = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
+  const { topic, sort_by: sortBy, order } = req.query;
+  selectArticles(topic, sortBy, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      next(err)
+    });
 };
 
 exports.patchArticle = (req, res, next) => {

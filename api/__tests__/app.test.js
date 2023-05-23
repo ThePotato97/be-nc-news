@@ -422,6 +422,175 @@ describe("/api", () => {
         });
     });
   });
+  describe('GET /api/articles (queries)', () => {
+    it('should return articles with the specified topic', () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(11);
+          expect(articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: "mitch",
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it('should return articles with the specified order', () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("created_at", {
+            descending: false,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it('should return articles sorted by author', () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("author", {
+            descending: true,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it('should return articles sorted by article_id', () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("article_id", {
+            descending: true,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it('should take multiple queries', () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&topic=mitch&order=asc")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(11);
+          expect(articles).toBeSortedBy("article_id", {
+            descending: false,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it('should return 400 for invalid sort_by field', () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Invalid sort_by field');
+        });
+    });
+    it('should return 400 for invalid order field', () => {
+      return request(app)
+        .get("/api/articles?order=invalid")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Invalid order field');
+        });
+    });
+    it('should return an empty array if theres no matching topics', () => {
+      return request(app)
+        .get("/api/articles?topic=invalid")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe('Invalid topic field');
+        });
+    });
+    it('should return articles sorted by votes in ascending order', () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("votes", {
+            descending: false,
+          });
+        });
+    });
+  });
   describe("Invalid Path", () => {
     it("should return 404 if the path doesn't exist", () => {
       return request(app).get("/api/banana").expect(404);

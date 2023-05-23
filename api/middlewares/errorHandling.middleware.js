@@ -6,6 +6,7 @@ exports.errorHandling = (err, req, res, next) => {
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Invalid Body" });
   } else {
+    console.error("unhandled", err)
     res.status(500).send({ msg: "Internal Server Error" });
   }
 };

@@ -444,7 +444,7 @@ describe("/api", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
         });
@@ -470,7 +470,7 @@ describe("/api", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
         });
@@ -496,7 +496,7 @@ describe("/api", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
         });
@@ -522,7 +522,33 @@ describe("/api", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+          });
+        });
+    });
+    it('should return articles sorted by comment_count', () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then((res) => {
+          const { articles } = res.body;
+          console.log(articles)
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("comment_count", {
+            descending: true,
+          });
+
+          articles.forEach((topic) => {
+            expect(topic).toMatchObject({
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
         });
@@ -548,7 +574,7 @@ describe("/api", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
         });

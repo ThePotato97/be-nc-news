@@ -21,7 +21,7 @@ exports.selectTopicNames = () => {
 
 exports.selectArticles = (topic, sortBy = "created_at", order = "desc") => {
   const validOrder = ["DESC", "ASC"]
-  const validColumns = ["created_at", "author", "title", "article_id", "topic", "created_at", "votes", "article_img_url"]
+  const validColumns = ["created_at", "author", "title", "article_id", "topic", "created_at", "votes", "article_img_url", "comment_count"]
   const topicQuery = topic !== undefined ? `WHERE articles.topic = $1` : ``
   const queryParams = topic !== undefined ? [topic] : []
   return this.selectTopicNames().then((validTopics) => {
